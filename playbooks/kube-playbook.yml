@@ -1,0 +1,35 @@
+---
+- name: API Deployment Setup
+  hosts: 192.168.1.199
+  tasks:
+    - name: Push to DockerHub
+      shell: |
+        docker push marcuskielman/devops_api: latest
+        docker image rm marcuskielman/devops_api
+    - name: Remove Production
+      shell: rm -rf /home/marcus/production/*
+      ignore_errors: True
+    - name: Go to Production
+      shell: mv /home/marcus/staging/devops_api/ /home/marcus/production/
+    - name: Check for existing Pods and Replace
+      shell: |
+        kubectl get pods -o name | grep mariadb
+      register: deployed
+      ignore_errors: True
+    - name: Replace API Pods
+      shell: |
+        cd /home/marcus/production/devops_api/terraform_modules/default_api
+        terraform apply
+      when: deployed.stdout != ""
+    - name: Set Up Kubernetes Deployment
+      shell: |
+        cd /home/marcus/production/devops_api/terraform_modules/default_api
+        terraform apply
+        kubectl get pods -o name | grep mariadb
+      register: mariadb
+      when: deployed.stdout == ""
+    - name: Configure Database
+      shell: |
+        echo "source /usr/src/app/mysqlsampledatabase.sql" | kubectl exec -i {{ mariadb.stdout_lines[4] }} -- mysql -uroot -proot classicmodels
+      when: deployed.stdout == ""
+

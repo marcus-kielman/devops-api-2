@@ -1,0 +1,42 @@
+---
+- name: API Environment Testing Setup
+  hosts: 192.168.1.199
+  vars:
+    username: marcus-kielman
+    repo_name: devops_api
+  tasks:
+    - name: Test flake8 Styling
+      shell: |
+        cd /home/marcus/staging/devops_api
+        flake8 api/model/customers.py
+        flake8 api/model/offices.py
+        flake8 api/model/payments.py
+        flake8 api/model/tables.py
+        flake8 api/mxk_api.py
+        flake8 test_files/api_test.py
+        flake8 test_files/kube_test.py
+    - name: Test Connection
+      shell: |
+        cd /home/marcus/staging/devops_api
+        curl http://192.168.1.245:8081
+        curl http://192.168.1.245:8081/get_database_table
+        curl http://192.168.1.245:8081/get_database_table/payments
+        curl http://192.168.1.245:8081/get_database_table/customers
+        python3 test_files/api_test.py
+      register: failed
+      ignore_errors: True
+
+    - name: Stop Containers and Remove mariadb image
+      shell: |
+        docker container stop devops_api mariadb && docker container rm devops_api mariadb
+        docker image rm marcuskielman/mariadb
+        docker network rm api_maria
+      when: failed.stdout == ""
+
+    - name: Stop Containers and Remove images
+      shell: |
+        docker container stop devops_api mariadb && docker container rm devops_api mariadb
+        docker image rm marcuskielman/devops_api marcuskielman/mariadb
+        docker network rm api_maria
+      when: failed.stdout != ""
+      failed_when: failed.stdout != ""

@@ -1,0 +1,57 @@
+---
+- name: API Environment Testing Setup
+  hosts: 192.168.1.199
+  vars:
+    username: marcus-kielman
+    repo_name: devops_api
+  tasks:
+    - name: Install flake8
+      become: yes
+      apt:
+        pkg:
+          - flake8
+    - name: Install pip
+      become: yes
+      apt:
+        pkg:
+          - python3-pip
+    - name: Clone Git Repository to Staging
+      shell: |
+        cd /home/marcus/staging
+        git clone https://github.com/marcus-kielman/devops_api.git
+      register: cloned
+      ignore_errors: True
+    - name: Pull Git Repository in Staging
+      shell: |
+        cd /home/marcus/staging/devops_api
+        git pull origin
+      when: cloned.stdout == ""
+    - name: Install pipenv
+      become: yes
+      apt:
+        pkg:
+          - pipenv
+    - name: Install Python Dependencies
+      shell: |
+        cd /home/marcus/staging/devops_api
+        pip3 install docker
+        pip3 install -- update wheel
+        pip3 install -- update setuptools
+        pip3 install -r jenkins_requirements.txt --no-warn-script-location
+      ignore_errors: True
+    - name: Build Docker Images, Network Connection
+      shell: |
+        cd /home/marcus/staging/devops_api
+        docker build -t marcuskielman/devops_api .
+        docker network create api_maria
+      ignore_errors: True
+
+    - name: Run Docker Containers and Import Database
+      shell: |
+        docker run -p 8081:8081 -h devops_api --network api_maria --name devops_api marcuskielman/devops_api &
+        docker run -p 3306:3306 -h mariadb --network api_maria --name mariadb  -d marcuskielman/mariadb
+
+    - name: Import Database
+      shell: |
+        sleep 160s
+        echo "source /usr/src/app/mysqlsampledatabase.sql" | docker exec -i mariadb mysql -uroot -proot classicmodels
