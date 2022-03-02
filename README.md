@@ -1,12 +1,15 @@
-# DevOps Case Study v0.0.6
-## DevOps Developed API
+# DevOps Case Study 2 v0.0.1
+## DevOps Provisioned and Monitored API
 
-This repository runs an API that communicates with a MariaDB database, applies a CI/CD approach to testing and version control, and IaC an for deployment.
+This repository is a continuation of the DevOps Case Study repository. In addition to API and MariaDB communication from the previous repository, Terraform and Elastic Cloud are used for provisioning and monitoring our Kubernetes cluster.
+
+The overall goal of this project is to provide a more simplified way to alert an operator of when the previous architecture needed more replicas or was using too many replicas. Overall assisting to make continuous monitoring and provisioning more optimal.
 
 ## Features
 
 - Send GET requests to retrieve the database table, payments table, customers table, and offices table
 - Send POST requests to insert a new row into the customers table and payments table
+- Allow Provisioning to scale up and down replicas in kubernetes cluster
 
 
 ## Requirements for compatibility
@@ -41,23 +44,27 @@ Python libraries can be installed using the command
 pip install -r requirements.txt
 ```
 
-## Environment Setup
+## Architecture Components
 
+### pipenv
 For Development, a Pipfile has been provided for utilizing pipenv. You can access
 this environment using the command ```$ pipenv shell```
 
-Docker is used to containerize the API and MariaDB Database independently. Docker 
-containers can be created using the following commands:
-```
-$ cd devops_api
-$ docker build -t marcuskielman/devops_api .    # Builds API image
-$ docker network create api_mariadb             # Creates shared network for API and Database
-$ docker run -p 3306:3306 -h mariadb --network api_mariadb --name mariadb -d marcuskielman/mariadb    # Pulls marcuskielman/mariadb from DockerHub and runs container
-$ docker run -p 8081:8081 -h devops_api --network api_maria --name devops_api marcuskielman/devops_api    # Runs API as container
-$ docker exec -i mariadb mysql -uroot -proot classicmodels < mysqlsampledatabase.sql    # Imports mysqlsampledatabase.sql to database
-```
+### Docker
+Docker is used to containerize the API and MariaDB Database independently. MariaDB image has been modified to provide mysqlsampledatabase.sql file. For more information please see the [devops_api] (https://github.com/marcus-kielman/devops-api-2) repository.
 
-For CI/CD Setup and Testing, Jenkins is utilized and deployed at port 8080 for creating a Pipeline from the GitHub repository to the Jenkins server. The Jenkinsfile in the repository pulls from this repository, builds the API image, and sets up the development environment for testing. API image builds will be sent to DockerHub and Kubernetes/Minikube on successful testing.
+### Jenkins and Ansible
+A docker image marcuskielman/jenkans was created to run Jenkins and Ansible to remotely run CI/CD and IaC. For this reason much of testing is remotely done outside the container. To accomplish this a private key must be generated on your target machine and stored in ```~/.ssh/authorized keys```.
+
+### Kubernetes
+The API and database were deployed to a Kubernetes cluster to assist with load balancing. It works in tandem with Terraform to increase the number of replicant API pods and horizontally scaling up and down our architecture.
+
+### Terraform and ELK (Elastic Cloud)
+
+Terraform was used to provision the Kubernetes cluster and provide different modules that assist to deploy the cluster. The default module creates 3 replicas of the API pod while scaling up and down increases and/or decreases the number of pods by 2. Elastic Cloud, the online version of the ELK stack was utilized to monitor the system's CPU, Memory, and Network Traffic
+
+## Monitoring Process and Setup
+The minikube dashboard gives insight of the amount of CPU, Memory, and Network traffic used by the Kubernetes Cluster, while the CPU and Memory Dashboard informs the overall CPU, Memory, and Network Traffic usage in the overall machine. Alerts have been set up to check when the outbound traffic exceeds a certain threshold for a certain period of time. This way when an operator receives an alert, they know to scale up the architecture
 
 ## Interface Controls
 The main interface for the application is the ```curl``` command in Linux. This can be installed using ```sudo apt install curl```. 
@@ -84,6 +91,14 @@ The following urls are used to send GET and POST requests to the API Docker Cont
 │   ├── kube_files
 |   |   ├── api_kube.yml
 |   |   ├── api_maria_kube.yml
+│   ├── playbooks
+|   |   ├── env-playbook.yml
+|   |   ├── kube-playbook.yml
+|   |   ├── test-playbook.yml
+|   ├── terraform_modules
+|   |   ├── default_api
+|   |   ├── scale_down_api
+|   |   ├── scale_up_api
 │   ├── test_files
 |   |   ├── api_test.py
 |   |   ├── kube_test.py
@@ -109,7 +124,4 @@ The following Python files have been created as unit tests for Docker containers
 The following shell scripts ```del-docker-entries.sh``` and ```del-test-entries.sh``` are used to remove rows in the database added for testing the docker containers and kubernetes pods respectively. They can be run as executable files through the terminal.
 
 ## Ansible Environment Setup and Deployment
-There are two playbooks used for creating the testing environment, and deploying to kubernetes. When running CI/CD testing in Jenkins, the ```env-playbook.yml``` playbook is used to install necessary packages and libraries for testing docker container functionality and Python linting testing. On success, the ```kube-playbook.yml``` playbook is used to determine if pods are already created or not, and deploy accordingly. 
-
-### Deployment
-Additional running for deployment can be accomplished using the ```test_files/kube-run.sh``` to enable port forwarding and run unit testing on kubernetes pods. Two types of .yml files are provided for deploying the API and database (```api_maria_kube.yml```) and deploying only the API (```api_kube.yml```). In cases where the API and database haven't been deployed, deployment occurs using the command ```kubectl apply -f kube_files/api_maria_kube.yml```. In cases where the database is running and persistence should remain, updating the API occurs using the command ```kubectl replace -f kube_files/api_kube.yml```
+There are three playbooks used for creating the testing environment, and deploying to kubernetes. When running CI/CD testing in Jenkins, the ```env-playbook.yml``` playbook is used to install necessary packages and libraries for testing docker container functionality and Python linting testing along with building the docker image. On success, the ```kube-playbook.yml``` playbook is used to determine if pods are already created or not, and trigger the initial Terraform provisioning. An additional ```test-playbook.yml``` file was created to run testing during the staging phase.
