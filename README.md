@@ -54,18 +54,23 @@ this environment using the command ```$ pipenv shell```
 Docker is used to containerize the API and MariaDB Database independently. MariaDB image has been modified to provide mysqlsampledatabase.sql file. For more information please see the [devops_api] (https://github.com/marcus-kielman/devops-api-2) repository.
 
 ### Jenkins and Ansible
+![jenkins-build](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/Jenkins%20build.png)
+
 A docker image marcuskielman/jenkans was created to run Jenkins and Ansible to remotely run CI/CD and IaC. For this reason much of testing is remotely done outside the container. To accomplish this a private key must be generated on your target machine and stored in ```~/.ssh/authorized keys```.
 
 ### Kubernetes
+![kubernetes](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/Pods%20Running%20in%20Kubernetes.png) 
+
 The API and database were deployed to a Kubernetes cluster to assist with load balancing. It works in tandem with Terraform to increase the number of replicant API pods and horizontally scaling up and down our architecture.
 
 ### Terraform and ELK (Elastic Cloud)
-
+![System-Monitor](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/Monitor%201.png)
 Terraform was used to provision the Kubernetes cluster and provide different modules that assist to deploy the cluster. The default module creates 3 replicas of the API pod while scaling up and down increases and/or decreases the number of pods by 2. Elastic Cloud, the online version of the ELK stack was utilized to monitor the system's CPU, Memory, and Network Traffic
 
 ## Monitoring Process and Setup
 The minikube dashboard gives insight of the amount of CPU, Memory, and Network traffic used by the Kubernetes Cluster, while the CPU and Memory Dashboard informs the overall CPU, Memory, and Network Traffic usage in the overall machine. Alerts have been set up to check when the outbound traffic exceeds a certain threshold for a certain period of time. This way when an operator receives an alert, they know to scale up the architecture
-
+![minikube](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/minikube%20monitor.png)
+![alert](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/Slack%20Alerts.png)
 ## Interface Controls
 The main interface for the application is the ```curl``` command in Linux. This can be installed using ```sudo apt install curl```. 
 The following urls are used to send GET and POST requests to the API Docker Containers:
