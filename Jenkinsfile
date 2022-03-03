@@ -3,6 +3,7 @@ pipeline{
     stages{
         stage('Setting Up Testing Environment'){
             steps{
+                sh "pwd"
                 sh '''ansible-playbook -u marcus /playbooks/env-playbook.yml -v'''
             }
         }
