@@ -34,6 +34,7 @@
       when: deployed.stdout == ""
     - name: Configure Database
       shell: |
+        sleep 160s
         echo "source /usr/src/app/mysqlsampledatabase.sql" | kubectl exec -i {{ mariadb.stdout_lines[0] }} --context kind-devops-api -- mysql -uroot -proot classicmodels
       when: deployed.stdout == ""
 
