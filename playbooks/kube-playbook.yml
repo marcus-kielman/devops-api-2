@@ -24,12 +24,13 @@
     - name: Set Up Kubernetes Deployment
       shell: |
         cd /home/marcus/production/devops-api-2/terraform_modules/default_api
-        terraform apply
+        terraform init
+        echo "yes" | terraform apply
         kubectl get pods --context kind-devops-api -o name | grep mariadb
       register: mariadb
       when: deployed.stdout == ""
     - name: Configure Database
       shell: |
-        echo "source /usr/src/app/mysqlsampledatabase.sql" | kubectl exec -i {{ mariadb.stdout_lines[4] }} --context kind-devops-api -- mysql -uroot -proot classicmodels
+        echo "source /usr/src/app/mysqlsampledatabase.sql" | kubectl exec -i {{ mariadb.stdout_lines[0] }} --context kind-devops-api -- mysql -uroot -proot classicmodels
       when: deployed.stdout == ""
 
