@@ -26,6 +26,9 @@
         cd /home/marcus/production/devops-api-2/terraform_modules/default_api
         terraform init
         echo "yes" | terraform apply
+      when: deployed.stdout == ""
+    - name: Get MariaDB Name
+      shell: |
         kubectl get pods --context kind-devops-api -o name | grep mariadb
       register: mariadb
       when: deployed.stdout == ""
