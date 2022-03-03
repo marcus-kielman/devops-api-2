@@ -10,7 +10,7 @@
       shell: rm -rf /home/marcus/production/*
       ignore_errors: True
     - name: Go to Production
-      shell: mv /home/marcus/staging/devops_api-2/ /home/marcus/production/
+      shell: mv /home/marcus/staging/devops-api-2/ /home/marcus/production/
     - name: Check for existing Pods and Replace
       shell: |
         kubectl get pods -o name | grep mariadb
@@ -18,12 +18,12 @@
       ignore_errors: True
     - name: Replace API Pods
       shell: |
-        cd /home/marcus/production/devops_api-2/terraform_modules/default_api
+        cd /home/marcus/production/devops-api-2/terraform_modules/default_api
         terraform apply
       when: deployed.stdout != ""
     - name: Set Up Kubernetes Deployment
       shell: |
-        cd /home/marcus/production/devops_api-2/terraform_modules/default_api
+        cd /home/marcus/production/devops-api-2/terraform_modules/default_api
         terraform apply
         kubectl get pods -o name | grep mariadb
       register: mariadb

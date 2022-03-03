@@ -17,7 +17,7 @@
         flake8 test_files/kube_test.py
     - name: Test Connection
       shell: |
-        cd /home/marcus/staging/devops_api-2
+        cd /home/marcus/staging/devops-api-2
         curl http://192.168.1.201:8081
         curl http://192.168.1.201:8081/get_database_table
         curl http://192.168.1.201:8081/get_database_table/payments

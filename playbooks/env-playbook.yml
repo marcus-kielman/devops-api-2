@@ -23,7 +23,7 @@
       ignore_errors: True
     - name: Pull Git Repository in Staging
       shell: |
-        cd /home/marcus/staging/devops_api-2
+        cd /home/marcus/staging/devops-api-2
         git pull origin
       when: cloned.stdout == ""
     - name: Install pipenv
@@ -41,7 +41,7 @@
       ignore_errors: True
     - name: Build Docker Images, Network Connection
       shell: |
-        cd /home/marcus/staging/devops_api-2
+        cd /home/marcus/staging/devops-api-2
         docker build -t marcuskielman/devops_api .
         docker network create api_maria
       ignore_errors: True
