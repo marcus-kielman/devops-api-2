@@ -21,7 +21,7 @@
         cd /home/marcus/production/devops-api-2/terraform_modules/default_api
         kubectl delete deployment devops-api --context kind-devops-api
         terraform init
-        echo "yes" | terraform apply
+        terraform reset
       when: deployed.stdout != ""
     - name: Set Up Kubernetes Deployment
       shell: |
