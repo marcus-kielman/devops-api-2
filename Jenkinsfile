@@ -1,10 +1,6 @@
 pipeline{
     agent any 
     stages{
-        stage('Clean workspace') {
-            deleteDir()
-            sh 'ls -lah'
-        }
         stage('Setting Up Testing Environment'){
             steps{
                 sh '''ansible-playbook -u marcus /playbooks/env-playbook.yml -v'''
