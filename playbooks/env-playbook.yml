@@ -18,7 +18,7 @@
     - name: Clone Git Repository to Staging
       shell: |
         cd /home/marcus/staging
-        git clone https://github.com/marcus-kielman/devops_api.git
+        git clone https://github.com/marcus-kielman/devops_api-2.git
       register: cloned
       ignore_errors: True
     - name: Pull Git Repository in Staging
