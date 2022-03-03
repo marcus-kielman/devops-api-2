@@ -54,7 +54,7 @@ this environment using the command ```$ pipenv shell```
 Docker is used to containerize the API and MariaDB Database independently. MariaDB image has been modified to provide mysqlsampledatabase.sql file. For more information please see the [devops_api] (https://github.com/marcus-kielman/devops-api-2) repository.
 
 ### Jenkins and Ansible
-![jenkins-build](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/Jenkins%20build.png)
+![jenkins-build](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/jenkins.png)
 
 A docker image marcuskielman/jenkans was created to run Jenkins and Ansible to remotely run CI/CD and IaC. For this reason much of testing is remotely done outside the container. To accomplish this a private key must be generated on your target machine and stored in ```~/.ssh/authorized keys```.
 
