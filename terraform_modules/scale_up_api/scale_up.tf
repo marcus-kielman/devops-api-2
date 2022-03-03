@@ -25,8 +25,6 @@ resource "kubernetes_replication_controller" "devops-api" {
         container {
           image = "marcuskielman/devops_api:latest"
           name  = "devops-api"
-          
-          }
 
           resources {
             limits = {
