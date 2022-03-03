@@ -1,4 +1,4 @@
-resource "kubernetes_deployment" "devops-api" {
+resource "kubernetes_pods" "devops-api" {
   metadata {
     name = "devops-api"
     labels = {
@@ -41,22 +41,5 @@ resource "kubernetes_deployment" "devops-api" {
         }
       }
     }
-  }
-}
-resource "kubernetes_service" "devops-api" {
-  metadata {
-    name = "devops-api"
-  }
-  spec {
-    selector = {
-      App = kubernetes_deployment.devops-api.spec.0.template.0.metadata[0].labels.App
-    }
-    port {
-      node_port   = 30201
-      port        = 9090
-      target_port = 8081
-    }
-
-    type = "NodePort"
   }
 }
