@@ -13,13 +13,13 @@
       shell: mv /home/marcus/staging/devops-api-2/ /home/marcus/production/
     - name: Check for existing Pods and Replace
       shell: |
-        kubectl get pods -o name | grep mariadb
+        kubectl get pods -o name --context kind-devops-api | grep mariadb
       register: deployed
       ignore_errors: True
     - name: Replace API Pods
       shell: |
         cd /home/marcus/production/devops-api-2/terraform_modules/default_api
-        terraform apply
+        terraform refresh
       when: deployed.stdout != ""
     - name: Set Up Kubernetes Deployment
       shell: |
