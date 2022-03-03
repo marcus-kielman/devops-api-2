@@ -1,31 +1,31 @@
-resource "kubernetes_pods" "devops-api" {
+resource "kubernetes_replication_controller" "devops-api" {
   metadata {
     name = "devops-api"
     labels = {
-      App = "devops-api"
+      test = "devops-api"
     }
   }
 
   spec {
-    replicas = 5
-    selector {
-      match_labels = {
-        App = "devops-api"
-      }
+    selector = {
+      test = "devops-api"
     }
     template {
       metadata {
         labels = {
-          App = "devops-api"
+          test = "devops-api"
+        }
+        annotations = {
+          "key1" = "value1"
         }
       }
+
       spec {
+        replicas = 5
         container {
           image = "marcuskielman/devops_api:latest"
           name  = "devops-api"
-
-          port {
-            container_port = 8081
+          
           }
 
           resources {
