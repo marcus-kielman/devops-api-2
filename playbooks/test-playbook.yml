@@ -18,11 +18,11 @@
     - name: Test Connection
       shell: |
         cd /home/marcus/staging/devops-api-2
-        curl http://192.168.1.201:8081
-        curl http://192.168.1.201:8081/get_database_table
-        curl http://192.168.1.201:8081/get_database_table/payments
-        curl http://192.168.1.201:8081/get_database_table/customers
         python3 test_files/api_test.py
+#        curl http://192.168.1.201:8081
+#        curl http://192.168.1.201:8081/get_database_table
+#        curl http://192.168.1.201:8081/get_database_table/payments
+#        curl http://192.168.1.201:8081/get_database_table/customers
       register: failed
       ignore_errors: True
 
