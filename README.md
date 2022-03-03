@@ -45,7 +45,7 @@ pip install -r requirements.txt
 ```
 
 ## Architecture Components
-
+![diagram](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/Blank%20diagram.png)
 ### pipenv
 For Development, a Pipfile has been provided for utilizing pipenv. You can access
 this environment using the command ```$ pipenv shell```
@@ -59,7 +59,7 @@ Docker is used to containerize the API and MariaDB Database independently. Maria
 A docker image marcuskielman/jenkans was created to run Jenkins and Ansible to remotely run CI/CD and IaC. For this reason much of testing is remotely done outside the container. To accomplish this a private key must be generated on your target machine and stored in ```~/.ssh/authorized keys```.
 
 ### Kubernetes
-![kubernetes](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/Pods%20Running%20in%20Kubernetes.png) 
+![kubernetes](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/kubectl%20monitor.png) 
 
 The API and database were deployed to a Kubernetes cluster to assist with load balancing. It works in tandem with Terraform to increase the number of replicant API pods and horizontally scaling up and down our architecture.
 
@@ -68,6 +68,7 @@ The API and database were deployed to a Kubernetes cluster to assist with load b
 Terraform was used to provision the Kubernetes cluster and provide different modules that assist to deploy the cluster. The default module creates 3 replicas of the API pod while scaling up and down increases and/or decreases the number of pods by 2. Elastic Cloud, the online version of the ELK stack was utilized to monitor the system's CPU, Memory, and Network Traffic
 
 ## Monitoring Process and Setup
+![htop](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/htop.png)
 The minikube dashboard gives insight of the amount of CPU, Memory, and Network traffic used by the Kubernetes Cluster, while the CPU and Memory Dashboard informs the overall CPU, Memory, and Network Traffic usage in the overall machine. Alerts have been set up to check when the outbound traffic exceeds a certain threshold for a certain period of time. This way when an operator receives an alert, they know to scale up the architecture
 ![minikube](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/minikube%20monitor.png)
 ![alert](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/Slack%20Alerts.png)
@@ -123,6 +124,7 @@ The following urls are used to send GET and POST requests to the API Docker Cont
 ```
 
 ## Testing
+![testing](https://raw.githubusercontent.com/marcus-kielman/devops-api-2/master/screenshots/test_deployment.png)
 The following Python files have been created as unit tests for Docker containers (```api_test.py```) and Kubernetes pods (```kube_test.py```). ```api_test.py``` can also be used as general unit testing during development. Both can be run using the command ```python3 kube_test.py``` or alternatively ```python3 api_test.py```
 
 ### Testing Cleanup
