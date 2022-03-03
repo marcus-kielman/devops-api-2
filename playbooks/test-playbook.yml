@@ -7,7 +7,7 @@
   tasks:
     - name: Test flake8 Styling
       shell: |
-        cd /home/marcus/staging/devops_api-2
+        cd /home/marcus/staging/devops-api-2
         flake8 api/model/customers.py
         flake8 api/model/offices.py
         flake8 api/model/payments.py
