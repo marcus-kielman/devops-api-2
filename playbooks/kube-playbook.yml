@@ -20,6 +20,7 @@
       shell: |
         cd /home/marcus/production/devops-api-2/terraform_modules/default_api
         terraform refresh
+        terraform refresh
       when: deployed.stdout != ""
     - name: Set Up Kubernetes Deployment
       shell: |
